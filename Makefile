@@ -1,10 +1,10 @@
 build:
 	mkdir -p lib/
-	gcc -o lib/getopt-dos.o -c src/getopt-dos.c -I include/
+	gcc -o lib/getopt_dos.o -c src/getopt_dos.c -I include/
 
 build-test: build
 	mkdir -p bin/
-	gcc -o bin/getopt-dos-test tests/getopt-dos.c lib/getopt-dos.o -I include/
+	gcc -o bin/getopt_dos-test tests/getopt_dos.c lib/getopt_dos.o -I include/
 
 test: build-test
-	bin/getopt-dos-test
+	bin/getopt_dos-test
