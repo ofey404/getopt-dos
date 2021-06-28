@@ -76,12 +76,20 @@ int getopt_dos_next(gdos_context *ctx)
             unsigned int name_len = (unsigned int)strlen(opt->name);
             if (token[name_len] == '\0')
             {
-                /* token is last argument or next token is a flag */
-                if (ctx->optind == ctx->argc || ctx->argv[ctx->optind][0] == '/') {
-                    assert(opt->arg_type == NO_ARGUMENT);
-                } else {
-                    assert(opt->arg_type == SPACE_SEPERATED_ARGUMENT_LIST);
-                    /* TODO: move optind in this branch */
+                assert(opt->arg_type == NO_ARGUMENT || opt->arg_type == SPACE_SEPERATED_ARGUMENT_LIST);
+
+                /* deal with possible argument list */
+                if (!(ctx->optind == ctx->argc || ctx->argv[ctx->optind][0] == '/')) {
+                    ctx->current_opt_arg.list.argument_list = ctx->argv + ctx->optind;
+
+                    /* count list length, move optind */
+                    const int ind_current_flag = ctx->optind;
+                    while (ctx->optind <= ctx->argc) {
+                        if (ctx->argv[ctx->optind][0] == '/')
+                            break;
+                        ctx->optind++;
+                    }
+                    ctx->current_opt_arg.list.num_args = ctx->optind - ind_current_flag;
                 }
             }
             else if (token[name_len] == ':')
