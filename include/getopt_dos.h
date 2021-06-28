@@ -29,17 +29,22 @@ typedef struct
 
 typedef struct
 {
-    int argc;
-    const char **argv;
-    const gdos_option *opts;
-    int num_opts;
-    int current_index;
     gdos_argtype arg_type;
     union
     {
         const char *single;
-        gdos_arglist arglist;
-    } current_opt_arg;
+        gdos_arglist list;
+    } arg;
+} gdos_argument;
+
+typedef struct
+{
+    int argc;
+    const char **argv;
+    const gdos_option *opts;
+    int num_opts;
+    int optind;
+    gdos_argument current_opt_arg;
 } gdos_context;
 
 int getopt_dos_create_context(gdos_context *ctx, int argc, const char **argv, const gdos_option *opts);
