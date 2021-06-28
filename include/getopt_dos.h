@@ -1,11 +1,23 @@
 #ifndef __GETOPT_DOS__
 #define __GETOPT_DOS__
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 #define GDOS_OPTIONS_END \
     {                    \
         0, 0, 0          \
     }
+
+
+#define GDOS_NEXT_ALL_OPTIONS_PROCEEDED -1
+/* getopt_dos_next() return this as identifier when the 
+   char[] ctx->optind points to doesn't start with slash.
+   Same with '+' in getopt(). */
+#define GDOS_NEXT_NOT_OPTION -2;
+
+/* Same with '?' in getopt() */
+#define GDOS_NEXT_NO_MATCHING_OPTION -3;
 
 typedef enum
 {
@@ -27,9 +39,9 @@ typedef struct
     int val;
 } gdos_option;
 
+/* `gdos_argument.arg` are pointer to argv array.  */
 typedef struct
 {
-    gdos_argtype arg_type;
     union
     {
         const char *single;
@@ -44,6 +56,7 @@ typedef struct
     const gdos_option *opts;
     int num_opts;
     int optind;
+    gdos_argtype arg_type;
     gdos_argument current_opt_arg;
 } gdos_context;
 
