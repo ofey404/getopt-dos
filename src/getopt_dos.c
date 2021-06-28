@@ -76,20 +76,26 @@ int getopt_dos_next(gdos_context *ctx)
             unsigned int name_len = (unsigned int)strlen(opt->name);
             if (token[name_len] == '\0')
             {
-                /* TODO: or argument list */
-                ctx->arg_type = NO_ARGUMENT;
+                /* token is last argument or next token is a flag */
+                if (ctx->optind == ctx->argc || ctx->argv[ctx->optind][0] == '/') {
+                    assert(opt->arg_type == NO_ARGUMENT);
+                } else {
+                    assert(opt->arg_type == SPACE_SEPERATED_ARGUMENT_LIST);
+                    /* TODO: move optind in this branch */
+                }
             }
             else if (token[name_len] == ':')
             {
-                ctx->arg_type = COLON_SEPERATED_ARGUMENT;
+                assert(opt->arg_type == COLON_SEPERATED_ARGUMENT);
                 ctx->current_opt_arg.single = token + name_len + 1;
             }
             else
             {
                 printf("Bad token!\n");
-                /* FIXME: this should be a internal error. */
-                return -1;
+                assert(0); /* this line should not be reached */
             }
+
+            ctx->arg_type = opt->arg_type;
             return opt->val;
         }
     }
