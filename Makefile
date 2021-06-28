@@ -8,3 +8,9 @@ build-test: build
 
 test: build-test
 	bin/getopt_dos-test
+
+gdb:
+	gcc -g -o lib/getopt_dos.o -c src/getopt_dos.c -I include/
+	gcc -g -o bin/getopt_dos-test tests/getopt_dos.c lib/getopt_dos.o -I include/
+	gdb bin/getopt_dos-test 
+

@@ -9,7 +9,6 @@
         0, 0, 0          \
     }
 
-
 #define GDOS_NEXT_ALL_OPTIONS_PROCEEDED -1
 /* getopt_dos_next() return this as identifier when the 
    char[] ctx->optind points to doesn't start with slash.
@@ -40,13 +39,10 @@ typedef struct
 } gdos_option;
 
 /* `gdos_argument.arg` are pointer to argv array.  */
-typedef struct
+typedef union
 {
-    union
-    {
-        const char *single;
-        gdos_arglist list;
-    } arg;
+    const char *single;
+    gdos_arglist list;
 } gdos_argument;
 
 typedef struct
