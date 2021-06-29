@@ -57,6 +57,7 @@ typedef struct
     int num_opts;
     int optind;
     gdos_argtype arg_type;
+    int current_opt;
     gdos_argument current_opt_arg;
 } gdos_context;
 

@@ -39,6 +39,44 @@ void print_context(int opt, gdos_context *ctx)
     return;
 }
 
+
+int simple_without_argument_from_ctx(int argc, const char *argv[])
+{
+    bool got_a = false;
+    bool got_xyz = false;
+
+    gdos_context ctx;
+    ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc, argv, option_list));
+
+    int opt;
+    char error_message[80];
+    while (getopt_dos_next(&ctx) != -1)
+    {
+        opt = ctx.current_opt;
+        switch (opt)
+        {
+        case GDOS_TEST_OPTION_A:
+            ASSERT(!got_a);
+            ASSERT(ctx.arg_type == NO_ARGUMENT);
+            got_a = true;
+            break;
+        case GDOS_TEST_OPTION_XYZ:
+            ASSERT(!got_xyz);
+            ASSERT(ctx.arg_type == NO_ARGUMENT);
+            got_xyz = true;
+            break;
+        default:
+            printf("opt = %i\n", opt);
+            FAILm("got an unexpected opt!");
+            break;
+        }
+    }
+
+    ASSERT(got_a);
+    ASSERT(got_xyz);
+    return 0;
+}
+
 int simple_without_argument(int argc, const char *argv[])
 {
     bool got_a = false;
@@ -267,6 +305,22 @@ TEST without_argument()
     return 0;
 }
 
+TEST without_argument_from_ctx()
+{
+    const char *argv1[] = {"dummy_program", "/a", "/xyz"};
+    const char *argv2[] = {"dummy_program", "/A", "/XYZ"};
+
+    if (simple_without_argument((int)ARRAY_LENGTH(argv1), argv1) != 0)
+    {
+        return -1;
+    }
+    if (simple_without_argument((int)ARRAY_LENGTH(argv2), argv2) != 0)
+    {
+        return -1;
+    }
+    return 0;
+}
+
 TEST colon_seperated_argument()
 {
     const char *argv1[] = {"dummy_program", "/c:para_c", "/c_rst:para_rst", "/c_no_arg:"};
@@ -302,6 +356,7 @@ GREATEST_SUITE(getopt_dos)
     RUN_TEST(no_matching_option);
     RUN_TEST(argument_type_mismatch);
     RUN_TEST(without_argument);
+    RUN_TEST(without_argument_from_ctx);
     RUN_TEST(colon_seperated_argument);
     RUN_TEST(space_seperated_argument_list);
 }

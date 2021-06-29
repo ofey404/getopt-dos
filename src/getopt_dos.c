@@ -108,6 +108,7 @@ int getopt_dos_next(gdos_context *ctx)
             }
 
             ctx->arg_type = opt->arg_type;
+            ctx->current_opt = opt->val;
             return opt->val;
         }
     }
