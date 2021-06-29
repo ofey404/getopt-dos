@@ -14,10 +14,13 @@
 /* getopt_dos_next() return this as identifier when the 
    char[] ctx->optind points to doesn't start with slash.
    Same with '+' in getopt(). */
-#define GDOS_NEXT_NOT_OPTION -2;
+#define GDOS_NEXT_NOT_OPTION -2
 
 /* Same with '?' in getopt() */
-#define GDOS_NEXT_NO_MATCHING_OPTION -3;
+#define GDOS_NEXT_NO_MATCHING_OPTION -3
+
+/* catch arg type mismatch as much as possible */
+#define GDOS_NEXT_ARGUMENT_TYPE_MISMATCH -4
 
 typedef enum
 {

@@ -122,35 +122,37 @@ int simple_colon_seperated_argument(int argc, const char *argv[])
     return 0;
 }
 
-int argument_list_eq(gdos_arglist *lhs, gdos_arglist *rhs) {
-    if (lhs->num_args != rhs->num_args) {
+int argument_list_eq(gdos_arglist *lhs, gdos_arglist *rhs)
+{
+    if (lhs->num_args != rhs->num_args)
+    {
         return -1;
     }
-    for (int i=0; i<lhs->num_args; i++) {
-        if (strcmp(lhs->argument_list[i], rhs->argument_list[i]) != 0) {
+    for (int i = 0; i < lhs->num_args; i++)
+    {
+        if (strcmp(lhs->argument_list[i], rhs->argument_list[i]) != 0)
+        {
             return -1;
         }
     }
     return 0;
 }
 
-int simple_space_seperated_argument_list(int argc, const char *argv[]) {
+int simple_space_seperated_argument_list(int argc, const char *argv[])
+{
     bool got_s = false;
     const char *arglist[] = {"para1", "para2"};
     gdos_arglist s_arg = {
         .argument_list = arglist,
-        .num_args = 2
-    };
+        .num_args = 2};
     bool got_s_xyz = false;
     gdos_arglist s_xyz_arg = {
         .argument_list = arglist,
-        .num_args = 2
-    };
+        .num_args = 2};
     bool got_s_no_arg = false;
     gdos_arglist s_no_arg = {
         NULL,
-        0
-    };
+        0};
 
     gdos_context ctx;
     ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc, argv, option_list));
@@ -202,13 +204,49 @@ TEST nothing()
 
     gdos_context ctx;
     ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc, argv, option_list));
-    ASSERT_EQ(-1, getopt_dos_next(&ctx));
+    ASSERT_EQ(GDOS_NEXT_ALL_OPTIONS_PROCEEDED, getopt_dos_next(&ctx));
     return 0;
 }
 
 /* test return value on failure */
-TEST failed()
+TEST not_option()
 {
+    const char *argv[] = {"dummy_program", "not_a_option"};
+    int argc = ARRAY_LENGTH(argv);
+
+    gdos_context ctx;
+    ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc, argv, option_list));
+    ASSERT_EQ(GDOS_NEXT_NOT_OPTION, getopt_dos_next(&ctx));
+
+    return 0;
+}
+
+TEST no_matching_option()
+{
+    const char *argv[] = {"dummy_program", "/no_matching_option"};
+    int argc = ARRAY_LENGTH(argv);
+
+    gdos_context ctx;
+    ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc, argv, option_list));
+    ASSERT_EQ(GDOS_NEXT_NO_MATCHING_OPTION, getopt_dos_next(&ctx));
+
+    return 0;
+}
+
+TEST argument_type_mismatch()
+{
+    const char *argv1[] = {"dummy_program", "/a:"};
+    int argc1 = ARRAY_LENGTH(argv1);
+    const char *argv2[] = {"dummy_program", "/c"};
+    int argc2 = ARRAY_LENGTH(argv2);
+
+    gdos_context ctx;
+    ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc1, argv1, option_list));
+    ASSERT_EQ(GDOS_NEXT_ARGUMENT_TYPE_MISMATCH, getopt_dos_next(&ctx));
+
+    ASSERT_EQ(0, getopt_dos_create_context(&ctx, argc2, argv2, option_list));
+    ASSERT_EQ(GDOS_NEXT_ARGUMENT_TYPE_MISMATCH, getopt_dos_next(&ctx));
+
     return 0;
 }
 
@@ -246,7 +284,7 @@ TEST space_seperated_argument_list()
 {
     const char *argv1[] = {"dummy_program", "/s", "para1", "para2", "/s_xyz", "para1", "para2", "/s_no_arg"};
     const char *argv2[] = {"dummy_program", "/S", "para1", "para2", "/S_XYZ", "para1", "para2", "/S_NO_ARG"};
-    
+
     if (simple_space_seperated_argument_list((int)ARRAY_LENGTH(argv1), argv1) != 0)
     {
         return -1;
@@ -260,10 +298,12 @@ TEST space_seperated_argument_list()
 GREATEST_SUITE(getopt_dos)
 {
     RUN_TEST(nothing);
+    RUN_TEST(not_option);
+    RUN_TEST(no_matching_option);
+    RUN_TEST(argument_type_mismatch);
     RUN_TEST(without_argument);
     RUN_TEST(colon_seperated_argument);
     RUN_TEST(space_seperated_argument_list);
-
 }
 
 GREATEST_MAIN_DEFS();

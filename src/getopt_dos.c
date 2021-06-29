@@ -76,15 +76,18 @@ int getopt_dos_next(gdos_context *ctx)
             unsigned int name_len = (unsigned int)strlen(opt->name);
             if (token[name_len] == '\0')
             {
-                assert(opt->arg_type == NO_ARGUMENT || opt->arg_type == SPACE_SEPERATED_ARGUMENT_LIST);
+                if (!(opt->arg_type == NO_ARGUMENT || opt->arg_type == SPACE_SEPERATED_ARGUMENT_LIST))
+                    return GDOS_NEXT_ARGUMENT_TYPE_MISMATCH;
 
                 /* deal with possible argument list */
-                if (!(ctx->optind == ctx->argc || ctx->argv[ctx->optind][0] == '/')) {
+                if (!(ctx->optind == ctx->argc || ctx->argv[ctx->optind][0] == '/'))
+                {
                     ctx->current_opt_arg.list.argument_list = ctx->argv + ctx->optind;
 
                     /* count list length, move optind */
                     const int ind_current_flag = ctx->optind;
-                    while (ctx->optind <= ctx->argc) {
+                    while (ctx->optind <= ctx->argc)
+                    {
                         if (ctx->argv[ctx->optind][0] == '/')
                             break;
                         ctx->optind++;
@@ -94,7 +97,8 @@ int getopt_dos_next(gdos_context *ctx)
             }
             else if (token[name_len] == ':')
             {
-                assert(opt->arg_type == COLON_SEPERATED_ARGUMENT);
+                if (!(opt->arg_type == COLON_SEPERATED_ARGUMENT))
+                    return GDOS_NEXT_ARGUMENT_TYPE_MISMATCH;
                 ctx->current_opt_arg.single = token + name_len + 1;
             }
             else
